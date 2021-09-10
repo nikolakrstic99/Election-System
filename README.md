@@ -2,7 +2,7 @@
 Python project using Flask and SQLAlchemy libraries. Services are running in Docker containers on Docker Swarm infrastructure.
 
 ## Before run
-you have to install all packages
+You have to install all packages(to make venv folder)
 
 ## Build the images
 Build the images using .dockerfiles, and set their tags:
