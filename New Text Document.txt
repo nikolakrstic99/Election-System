@@ -1,0 +1,7 @@
+python main.py -h
+
+python main.py --type all --authentication-address http://127.0.0.1:5002 --jwt-secret JWT_SECRET_KEY --roles-field roles --administrator-role admin --user-role user --administrator-address http://127.0.0.1:5003 --station-address http://127.0.0.1:5004 --with-authentication
+ 
+ python main.py --type without-authentication --administrator-address http://127.0.0.1:5001 --station-address http://127.0.0.1:5002
+ 
+ python main.py --type participant --administrator-address http://127.0.0.1:5003 --with-authentication --authentication-address http://127.0.0.1:5002

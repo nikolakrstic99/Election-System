@@ -1,0 +1,100 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - officialNetwork
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - officialNetwork
+      - adminNetwork
+      - authenticationNetwork
+  authenticationDB:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+    volumes:
+      - authenticationDBdata:/var/lib/mysql
+    networks:
+      - authenticationNetwork
+  authenticationDBMigration:
+    image: authenticationdbmigrate2
+    environment:
+      - DATABASE_URL=authenticationDB
+    networks:
+      - authenticationNetwork
+  authentication:
+    image: authentication
+    environment:
+      - DATABASE_URL=authenticationDB
+    networks:
+      - authenticationNetwork
+    ports:
+    - 5002:5002
+  electionDB:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+    volumes:
+      - electionDBdata:/var/lib/mysql
+    networks:
+      - adminNetwork
+  adminDBMigration:
+    image: admindbmigrate
+    environment:
+      - DATABASE_URL=electionDB
+    networks:
+      - adminNetwork
+  admin:
+    image: admin
+    environment:
+      - DATABASE_URL=electionDB
+    networks:
+      - adminNetwork
+    ports:
+      - 5003:5003
+  zvanicnik:
+    image: zvanicnik
+    environment:
+      - REDIS_HOST=redis
+    networks:
+      - officialNetwork
+    ports:
+      - 5004:5004
+  dameon:
+    image: daemon
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=electionDB
+    networks:
+      - officialNetwork
+      - adminNetwork
+
+volumes:
+  authenticationDBdata:
+  electionDBdata:
+
+networks:
+  authenticationNetwork:
+    driver: overlay
+  adminNetwork:
+    driver: overlay
+  officialNetwork:
+    driver: overlay
+
+
+
